@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>socialbigdata.transyt-projects.com</groupId>
+    <artifactId>SociaBigData</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>engine_socialbd</module>
+        <module>ingest_socialbd</module>
+        <module>streamingSQL_socialbd</module>
+    </modules>
+
+</project>
