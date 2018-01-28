@@ -3,13 +3,13 @@ package ucm.socialbd.com.cluster
 import java.util.Properties
 
 import com.github.sakserv.minicluster.impl.KafkaLocalBroker
-import ucm.socialbd.com.config.SocialBDProperties
+import ucm.socialbd.com.config.IngestSBDProperties
 
 /**
   * Created by Jeff on 24/04/2017.
   */
 object KafkaEmbedded extends EmbeddedCluster{
-  def initCluster(socialBDProperies:SocialBDProperties): Unit = {
+  def initCluster(socialBDProperies:IngestSBDProperties): Unit = {
     val kafkaLocalBroker = new KafkaLocalBroker.Builder()
       .setKafkaHostname(socialBDProperies.urlKafka.split(":")(0))
       .setKafkaPort(socialBDProperies.urlKafka.split(":")(1).toInt)

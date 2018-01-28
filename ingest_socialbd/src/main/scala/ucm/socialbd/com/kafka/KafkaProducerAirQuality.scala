@@ -3,14 +3,14 @@ package ucm.socialbd.com.kafka
 import java.util.Properties
 
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
-import ucm.socialbd.com.config.SocialBDProperties
+import ucm.socialbd.com.config.{IngestSBDProperties}
 import ucm.socialbd.com.utils.SocialBDConfig
 
 import scalaj.http._
 /**
   * Created by Jeff on 22/03/2017.
   */
-class KafkaProducerAirQuality(socialBDProperties: SocialBDProperties) extends KafkaProducerActions{
+class KafkaProducerAirQuality(socialBDProperties: IngestSBDProperties) extends KafkaProducerActions{
 
   override def process(): Unit = {
     val  props = SocialBDConfig.getProperties(socialBDProperties)

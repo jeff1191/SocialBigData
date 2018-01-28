@@ -7,7 +7,7 @@ import java.util.Locale
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 import org.json.{JSONArray, JSONException, XML}
 import org.slf4j.LoggerFactory
-import ucm.socialbd.com.config.SocialBDProperties
+import ucm.socialbd.com.config.{IngestSBDProperties}
 import ucm.socialbd.com.utils.{DateUtil, SocialBDConfig}
 import net.liftweb.json._
 
@@ -17,7 +17,7 @@ import scalaj.http._
 /**
   * Created by Jeff on 14/05/2017.
   */
-class KafkaProducerEMTBuses(socialBDProperties: SocialBDProperties) extends KafkaProducerActions{
+class KafkaProducerEMTBuses(socialBDProperties: IngestSBDProperties) extends KafkaProducerActions{
   private val logger = LoggerFactory.getLogger(getClass)
   private val stopList = fromFile(getClass.getResource("/listadoParadasEMT").getPath).getLines.toList.map(x => x.split(",")(1))
   private var nParada = 0

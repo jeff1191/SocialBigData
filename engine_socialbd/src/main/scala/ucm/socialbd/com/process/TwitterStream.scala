@@ -29,6 +29,7 @@ class TwitterStream(socialBDProperties: SocialBDProperties) extends StreamTransf
   val twitterDataStream:DataStream[Twitter] = KafkaFactoryConsumer.getRawStream(env,socialBDProperties,Instructions.GET_RAW_TWITTER).asInstanceOf[DataStream[Twitter]]
     val jsonDataStream  = twitterDataStream
       .map(enrObj => DataTypeFactory.getJsonString(enrObj, Instructions.GET_JSON_TWITTER).toString)
+    jsonDataStream.print()
     writeDataStreamToSinks(jsonDataStream)
     // execute the transformation pipeline
     env.execute("Twitter Job SocialBigData-CM")

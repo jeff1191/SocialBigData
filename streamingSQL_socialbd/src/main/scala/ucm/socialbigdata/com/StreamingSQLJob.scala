@@ -20,19 +20,25 @@ package ucm.socialbigdata.com
 
 import java.net.{InetAddress, InetSocketAddress}
 import java.util
-import java.util.Date
+import java.util.{Date, Properties}
 
 import org.apache.flink.api.common.functions.RuntimeContext
-import org.apache.flink.streaming.api.scala._
+import org.apache.flink.streaming.api.scala.{DataStream, _}
 import org.apache.flink.streaming.connectors.elasticsearch.{ElasticsearchSinkFunction, RequestIndexer}
 import org.apache.flink.streaming.connectors.elasticsearch5.ElasticsearchSink
+import org.apache.flink.streaming.connectors.kafka.{FlinkKafkaConsumer010, FlinkKafkaConsumer011}
 import org.apache.flink.table.api.{Table, TableEnvironment}
 import org.apache.flink.table.api.scala._
 import org.apache.flink.table.expressions.ExpressionParser
 import org.apache.flink.types.Row
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.client.Requests
-import ucm.socialbigdata.com.config.SocialBDProperties
+import ucm.socialbd.com.dataypes.EnrichmentModel.{EAir, ETweet}
+import ucm.socialbd.com.dataypes.EnrichmentObj
+import ucm.socialbd.com.dataypes.RawModel.{Air, GroupHour, InterUrbanTraffic}
+import ucm.socialbd.com.serde.JsonToObject
+import ucm.socialbd.com.sources.KafkaFactoryConsumer
+import ucm.socialbigdata.com.config.StreamingSQLProperties
 import ucm.socialbigdata.com.elasticsearch.SimpleElasticsearchSink
 import ucm.socialbigdata.com.operations.RowToJSONMap
 
@@ -40,35 +46,26 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
 object StreamingSQLJob {
 
-  case class Air(estacion: String,
-                 magnitud: String,
-                 tecnica: String,
-                 horario: String,
-                 fecha: String,
-                 listaHoras: List[GroupHour])
-
-  case class GroupHour(hora:String, valor:String, isValid:String)
-
   def main(args: Array[String]) {
+    if (!checkExtFile("conf",args(0))){
+      println ("Arguments: <streamingSQL_socialbd.conf> ")
+      System.exit(1)
+    }
 
-
-    val socialBDProperties = new SocialBDProperties(args(0))
+    val socialBDProperties = new StreamingSQLProperties(args(0))
 
 
     val env = StreamExecutionEnvironment.getExecutionEnvironment
-    val tableEnv = TableEnvironment.getTableEnvironment(env);
+    val tableEnv= TableEnvironment.getTableEnvironment(env)
 
-    val elem1 = Air("est1","mag1","tec1","horario1",new Date().toString, List(GroupHour("hora1", "value1", "true"),GroupHour("hora1.2", "value1.2", "true")))
-    val elem2 = Air("est2","mag2","tec2","horario2",new Date().toString, List(GroupHour("hora2", "value2", "true"),GroupHour("hora2.2", "value2.2", "true")))
-    val elem3 = Air("est3","mag3","tec3","horario3",new Date().toString, List(GroupHour("hora3", "value3", "true"),GroupHour("hora3.2", "value3.2", "true")))
+    val properties = new Properties()
+    // comma separated list of Kafka brokers
+    properties.setProperty("bootstrap.servers", socialBDProperties.kafkaBrokersUrls)
 
+    val dataStream : DataStream[ETweet] = env.addSource(new FlinkKafkaConsumer011[ETweet](
+      socialBDProperties.topic, new JsonToObject[ETweet](classOf[ETweet]), properties))
 
-    val airCollection = List(elem1, elem2, elem3)
-
-
-    val originDataStream = env.fromCollection(airCollection.toSeq)
-
-    tableEnv.registerDataStream(socialBDProperties.topic, originDataStream, 'estacion , 'magnitud, 'tecnica, 'horario, 'fecha, 'listaHoras)
+    tableEnv.registerDataStream("etweets", dataStream, 'id_str , 'createdAt, 'Xcoord, 'Ycoord, 'place, 'text, 'user, 'retweeted)
 
     val query = socialBDProperties.query.replace("SELECT","select").replace("Select","select").replace("FROM","from").replace("From","from")
 
@@ -99,11 +96,21 @@ object StreamingSQLJob {
     env.execute("Flink SQL SocialBigData-CM")
   }
 
-  def getElasticConfiguration(socialBDProperties: SocialBDProperties): util.Map[String, String] = {
+  def getElasticConfiguration(socialBDProperties: StreamingSQLProperties): util.Map[String, String] = {
     val config = new java.util.HashMap[String, String]
     config.put("bulk.flush.max.actions", "1")
     config.put("cluster.name", socialBDProperties.elasticClusterName)
     config.put("node.name", socialBDProperties.elasticNodeName)
     config
+  }
+
+
+  def checkExtFile(ext:String, filename:String): Boolean ={
+    val pat = s"""(.*)[.](${ext})""".r
+
+    filename match {
+      case pat(fn,ex) => true
+      case _ => false
+    }
   }
 }

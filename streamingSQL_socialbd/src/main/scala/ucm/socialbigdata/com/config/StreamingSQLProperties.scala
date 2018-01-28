@@ -7,7 +7,7 @@ import com.typesafe.config.ConfigFactory
   * Created by Jeff on 16/04/2017.
   */
 @SerialVersionUID(100L)
-class SocialBDProperties(path:String) extends Serializable{
+class StreamingSQLProperties(path:String) extends Serializable{
 
   private val conf = ConfigFactory.parseFile(new File(path))
 

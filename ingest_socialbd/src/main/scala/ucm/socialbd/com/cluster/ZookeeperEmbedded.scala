@@ -1,13 +1,13 @@
 package ucm.socialbd.com.cluster
 
 import com.github.sakserv.minicluster.impl.ZookeeperLocalCluster
-import ucm.socialbd.com.config.SocialBDProperties
+import ucm.socialbd.com.config.IngestSBDProperties
 
 /**
   * Created by Jeff on 24/04/2017.
   */
 object ZookeeperEmbedded {
-  def initCluster(socialBDProperties:SocialBDProperties): Unit = {
+  def initCluster(socialBDProperties:IngestSBDProperties): Unit = {
     val zookeeperLocalCluster = new ZookeeperLocalCluster.Builder()
     .setPort(socialBDProperties.urlZookeeper.split(":")(1).toInt)
     .setTempDir("embedded_zookeeper")

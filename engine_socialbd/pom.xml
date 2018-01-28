@@ -51,7 +51,7 @@ under the License.
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<flink.version>1.3.0</flink.version>
+		<flink.version>1.4.0</flink.version>
 		<slf4j.version>1.7.7</slf4j.version>
 		<log4j.version>1.2.17</log4j.version>
 	</properties>
@@ -81,6 +81,19 @@ under the License.
 	-->
 
 	<dependencies>
+		<!--SQL dependencies -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-table_2.11</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+		<!-- fast json-->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.33</version>
+		</dependency>
+
 		<!-- Apache Flink dependencies -->
 		<dependency>
 			<groupId>org.apache.flink</groupId>
@@ -121,9 +134,30 @@ under the License.
 		</dependency>
 		<dependency>
 			<groupId>org.apache.flink</groupId>
-			<artifactId>flink-connector-kafka-0.10_2.10</artifactId>
+			<artifactId>flink-connector-kafka-0.11_2.11</artifactId>
 			<version>${flink.version}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.liftweb/lift-json -->
+		<dependency>
+			<groupId>net.liftweb</groupId>
+			<artifactId>lift-json_2.11</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.json4s/json4s-native -->
+		<dependency>
+			<groupId>org.json4s</groupId>
+			<artifactId>json4s-native_2.11</artifactId>
+			<version>3.3.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.json4s/json4s-jackson -->
+		<dependency>
+			<groupId>org.json4s</groupId>
+			<artifactId>json4s-jackson_2.11</artifactId>
+			<version>3.3.0</version>
+		</dependency>
+
+
 		<dependency>
 			<groupId>org.apache.flink</groupId>
 			<artifactId>flink-connector-elasticsearch5_2.10</artifactId>

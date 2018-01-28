@@ -4,14 +4,14 @@ import java.util.Properties
 
 import kafka.admin.AdminUtils
 import kafka.utils.ZkUtils
-import ucm.socialbd.com.config.SocialBDProperties
+import ucm.socialbd.com.config.IngestSBDProperties
 
 /**
   * Created by Jeff on 26/04/2017.
   */
 object InitCluster {
 
-  def run(socialDBProperties:SocialBDProperties): Unit ={
+  def run(socialDBProperties:IngestSBDProperties): Unit ={
     //MODIFY CONFIGURATION
 
     ZookeeperEmbedded.initCluster(socialDBProperties)

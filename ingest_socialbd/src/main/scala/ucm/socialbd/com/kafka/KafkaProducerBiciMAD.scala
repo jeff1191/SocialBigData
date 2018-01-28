@@ -7,7 +7,7 @@ import java.util.Locale
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 import org.json.{JSONArray, JSONException, JSONObject}
 import org.slf4j.LoggerFactory
-import ucm.socialbd.com.config.SocialBDProperties
+import ucm.socialbd.com.config.{IngestSBDProperties}
 import ucm.socialbd.com.utils.SocialBDConfig
 
 import scalaj.http._
@@ -15,7 +15,7 @@ import scalaj.http._
 /**
   * Created by Jeff on 14/05/2017.
   */
-class KafkaProducerBiciMAD(socialBDProperties: SocialBDProperties) extends KafkaProducerActions{
+class KafkaProducerBiciMAD(socialBDProperties: IngestSBDProperties) extends KafkaProducerActions{
   private val logger = LoggerFactory.getLogger(getClass)
 
   override def process(): Unit = {

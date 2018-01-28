@@ -3,13 +3,13 @@ package ucm.socialbd.com.kafka
 import java.util.Properties
 
 import org.apache.kafka.clients.producer.KafkaProducer
-import ucm.socialbd.com.config.SocialBDProperties
+import ucm.socialbd.com.config.{IngestSBDProperties}
 import ucm.socialbd.com.utils.{SocialBDConfig, TwitterUtils}
 
 /**
   * Created by Jeff on 09/03/2017.
   */
-class KafkaProducerTwitter(socialBDProperties: SocialBDProperties) extends KafkaProducerActions{
+class KafkaProducerTwitter(socialBDProperties: IngestSBDProperties) extends KafkaProducerActions{
 
   override def process(): Unit = {
     val  props = SocialBDConfig.getProperties(socialBDProperties)
