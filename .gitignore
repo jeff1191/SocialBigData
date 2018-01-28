@@ -1,3 +1,4 @@
 .idea/
 *.iml
-conf/
+conf/*.conf
+conf/cluster/*.conf
