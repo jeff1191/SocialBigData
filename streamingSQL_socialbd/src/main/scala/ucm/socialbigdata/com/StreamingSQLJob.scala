@@ -33,6 +33,7 @@ import org.apache.flink.table.expressions.ExpressionParser
 import org.apache.flink.types.Row
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.client.Requests
+import ucm.socialbd.com.context.AppEnvironment
 import ucm.socialbd.com.dataypes.EnrichmentModel.{EAir, ETweet}
 import ucm.socialbd.com.dataypes.EnrichmentObj
 import ucm.socialbd.com.dataypes.RawModel.{Air, GroupHour, InterUrbanTraffic}
@@ -55,17 +56,17 @@ object StreamingSQLJob {
     val socialBDProperties = new StreamingSQLProperties(args(0))
 
 
-    val env = StreamExecutionEnvironment.getExecutionEnvironment
-    val tableEnv= TableEnvironment.getTableEnvironment(env)
+    val env = AppEnvironment.env
+    val tableEnv= AppEnvironment.tableEnv
 
     val properties = new Properties()
     // comma separated list of Kafka brokers
     properties.setProperty("bootstrap.servers", socialBDProperties.kafkaBrokersUrls)
 
-    val dataStream : DataStream[ETweet] = env.addSource(new FlinkKafkaConsumer011[ETweet](
-      socialBDProperties.topic, new JsonToObject[ETweet](classOf[ETweet]), properties))
+    val dataStream : DataStream[ETweet] = KafkaFactoryConsumer.getEnrichmentStream(socialBDProperties.topic,socialBDProperties.kafkaBrokersUrls,
+      true, socialBDProperties.fromBeginning).asInstanceOf[ DataStream[ETweet] ]
 
-    tableEnv.registerDataStream("etweets", dataStream, 'id_str , 'createdAt, 'Xcoord, 'Ycoord, 'place, 'text, 'user, 'retweeted)
+    //tableEnv.registerDataStream("etweets", dataStream, 'id_str , 'createdAt, 'Xcoord, 'Ycoord, 'place, 'text, 'user, 'retweeted)
 
     val query = socialBDProperties.query.replace("SELECT","select").replace("Select","select").replace("FROM","from").replace("From","from")
 

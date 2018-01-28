@@ -22,6 +22,7 @@ class StreamingSQLProperties(path:String) extends Serializable{
   conf.checkValid(ConfigFactory.defaultReference(), "elasticIndex")
   conf.checkValid(ConfigFactory.defaultReference(), "elasticType")
   conf.checkValid(ConfigFactory.defaultReference(), "topic")
+  conf.checkValid(ConfigFactory.defaultReference(), "fromBeginning")
 
 
   val kafkaBrokersUrls =  conf.getString("kafkaBrokersUrls")
@@ -34,9 +35,10 @@ class StreamingSQLProperties(path:String) extends Serializable{
   val elasticIndex =  conf.getString("elasticIndex")
   val elasticType =  conf.getString("elasticType")
   val topic =  conf.getString("topic")
+  val fromBeginning =  conf.getBoolean("fromBeginning")
 
 
   override def toString = s"SocialBDProperties($conf, $kafkaBrokersUrls, $zkUrl, " +
     s"$elasticClusterName, $elasticNodeName, $elasticPort, $elasticUrl, $query, " +
-    s"$elasticIndex, $elasticType, $topic)"
+    s"$elasticIndex, $elasticType, $topic, $fromBeginning)"
 }

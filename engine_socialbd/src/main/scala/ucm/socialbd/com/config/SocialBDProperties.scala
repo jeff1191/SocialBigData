@@ -20,6 +20,8 @@ case class EMTBusConf(emtbusTopicIn:String, emtbusTopicOut:String,elasticIndex:S
 @SerialVersionUID(100L)
 class SocialBDProperties(path:String) extends Serializable{
 
+  private val conf = ConfigFactory.parseFile(new File(path))
+
   val twitterConf = TwitterConf(conf.getString("twitter.twitterTopicIn"),
                     conf.getString("twitter.twitterTopicOut"),
                     conf.getString("twitter.elasticIndex"),
@@ -66,5 +68,4 @@ class SocialBDProperties(path:String) extends Serializable{
   val elasticPort =  conf.getInt("elasticPort")
   val elasticUrl =  conf.getString("elasticUrl")
   val outputMode =  conf.getString("outputMode")
-  private val conf = ConfigFactory.parseFile(new File(path))
 }

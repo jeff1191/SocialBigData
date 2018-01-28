@@ -17,7 +17,9 @@ case class BiciMadConf(bicimadTopic: String, urlBiciMad:String, delayMinutes:Lon
 case class EMTBusesConf(emtbusesTopic:String, urlEMTBuses:String, delayMinutes:Long )
 
 class IngestSBDProperties(path:String) {
-  
+
+  private val conf = ConfigFactory.parseFile(new File(path))
+
   val twitterConf = TwitterConf(conf.getString("twitter.twitterTopic"),
                     conf.getString("twitter.consumerKey"),
                     conf.getString("twitter.consumerSecret"),
@@ -46,5 +48,4 @@ class IngestSBDProperties(path:String) {
                     conf.getInt("buses.delayMinutes") * 60 * 1000)
   val urlKafka =  conf.getString("kafkaUrl")
   val urlZookeeper =  conf.getString("zkUrl")
-  private val conf = ConfigFactory.parseFile(new File(path))
 }

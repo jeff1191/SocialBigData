@@ -2,8 +2,8 @@ package ucm.socialbd.com.sources
 
 import java.util.Properties
 
+import org.apache.flink.api.common.serialization.SimpleStringSchema
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer010
-import org.apache.flink.streaming.util.serialization.SimpleStringSchema
 import ucm.socialbd.com.config.SocialBDProperties
 import ucm.socialbd.com.dataypes.{EnrichmentFileObj, EnrichmentObj, RawObj}
 import ucm.socialbd.com.factory.{DataTypeFactory, Instructions}
@@ -13,7 +13,9 @@ import org.apache.flink.table.api.scala._
 import org.apache.flink.table.expressions.ExpressionParser
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 import org.apache.flink.table.api.TableEnvironment
+import org.apache.kafka.clients.consumer.ConsumerConfig
 import twitter4j.TwitterObjectFactory
+import ucm.socialbd.com.context.AppEnvironment
 import ucm.socialbd.com.dataypes.EnrichmentModel.{EAir, ETraffic, ETweet}
 import ucm.socialbd.com.dataypes.RawModel.{Twitter, TwitterUser}
 import ucm.socialbd.com.serde.JsonToObject
@@ -65,38 +67,50 @@ object KafkaFactoryConsumer {
       case _ =>  throw new Exception(s"Unknown kafka source ${ins}")
     }
   }
-  def getEnrichmentStream(env:StreamExecutionEnvironment, topic: String, kafkaBrokers: String, registeredAtTableEnv:Boolean = false) = {
-//    val properties = new Properties()
-//    // comma separated list of Kafka brokers
-//    properties.setProperty("bootstrap.servers", kafkaBrokers)
-//
-//    topic match {
-//
-//      case "eAirQuality" =>
-//        val dataStream : DataStream[EAir] = env.addSource(new FlinkKafkaConsumer010[EAir](
-//        topic, new JsonToObject[EAir](classOf[EAir]), properties))
-//        if(registeredAtTableEnv)
-//          TableEnvironment.getTableEnvironment(env)
-//          .registerDataStream(topic, dataStream, 'estacion , 'codigoEst, 'Xcoord, 'Ycoord, 'fechaHora, 'magnitudNombre, 'magnitudCod, 'tecnicaNom, 'tecnicaCod, 'valor, 'nivelIntensidadTrafico)
-//
-//        dataStream
-//      case "eTraffic" =>
-//        val dataStream : DataStream[ETraffic] = env.addSource(new FlinkKafkaConsumer010[ETraffic](
-//        topic, new JsonToObject[ETraffic](classOf[ETraffic]), properties))
-//        if(registeredAtTableEnv)
-//          TableEnvironment.getTableEnvironment(env)
-//            .registerDataStream(topic, dataStream, 'idelem , 'identif, 'fechaHora, 'tipo_elem, 'intensidad, 'carga, 'vmed, 'error, 'Xcoord, 'Ycoord)
-//
-//        dataStream
-//      case "eTweets" =>
-//        val dataStream : DataStream[ETweet] = env.addSource(new FlinkKafkaConsumer010[ETweet](
-//        topic, new JsonToObject[ETweet](classOf[ETweet]), properties))
-//        if(registeredAtTableEnv)
-//          TableEnvironment.getTableEnvironment(env)
-//            .registerDataStream("etweets", dataStream, 'id_str , 'createdAt, 'Xcoord, 'Ycoord, 'place, 'text, 'user, 'retweeted)
-//
-//        dataStream
-//      case _ =>  throw new Exception(s"Unknown kafka source ${topic}")
-//    }
+  def getEnrichmentStream( topic: String, kafkaBrokers: String, registeredAtTableEnv:Boolean = false, fromBeginning: Boolean =false) = {
+    val properties = new Properties()
+    // comma separated list of Kafka brokers
+    properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBrokers)
+    if(fromBeginning)
+      properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
+
+    topic match {
+
+      case "eAirQuality" =>
+        val kafkaSource = new FlinkKafkaConsumer010[EAir](
+          topic, new JsonToObject[EAir](classOf[EAir]), properties)
+        if(fromBeginning) kafkaSource.setStartFromEarliest()
+
+        val dataStream : DataStream[EAir] = AppEnvironment.env.addSource(kafkaSource)
+        if(registeredAtTableEnv)
+          AppEnvironment.tableEnv
+          .registerDataStream(topic, dataStream, 'estacion , 'codigoEst, 'Xcoord, 'Ycoord, 'fechaHora, 'magnitudNombre, 'magnitudCod, 'tecnicaNom, 'tecnicaCod, 'valor, 'nivelIntensidadTrafico)
+
+        dataStream
+      case "eTraffic" =>
+        val kafkaSource = new FlinkKafkaConsumer010[ETraffic](
+          topic, new JsonToObject[ETraffic](classOf[ETraffic]), properties)
+        if(fromBeginning) kafkaSource.setStartFromEarliest()
+
+        val dataStream : DataStream[ETraffic] = AppEnvironment.env.addSource(kafkaSource)
+        if(registeredAtTableEnv)
+          AppEnvironment.tableEnv
+            .registerDataStream(topic, dataStream, 'idelem , 'identif, 'fechaHora, 'tipo_elem, 'intensidad, 'carga, 'vmed, 'error, 'Xcoord, 'Ycoord)
+
+        dataStream
+      case "eTweets" =>
+        val kafkaSource = new FlinkKafkaConsumer010[ETweet](
+          topic, new JsonToObject[ETweet](classOf[ETweet]), properties)
+        if(fromBeginning) kafkaSource.setStartFromEarliest()
+
+        val dataStream : DataStream[ETweet] = AppEnvironment.env.addSource(kafkaSource)
+        if(registeredAtTableEnv){
+          AppEnvironment.tableEnv
+            .registerDataStream("eTweets", dataStream, 'id_str , 'createdAt, 'Xcoord, 'Ycoord, 'place, 'text, 'user, 'retweeted)
+
+        }
+        dataStream
+      case _ =>  throw new Exception(s"Unknown kafka source ${topic}")
+    }
   }
 }
