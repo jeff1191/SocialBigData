@@ -27,7 +27,7 @@ class TwitterStream(socialBDProperties: SocialBDProperties) extends StreamTransf
   // Consumer group ID
   //properties.setProperty("auto.offset.reset", "earliest");
   val twitterDataStream:DataStream[Twitter] = KafkaFactoryConsumer.getRawStream(env,socialBDProperties,Instructions.GET_RAW_TWITTER).asInstanceOf[DataStream[Twitter]]
-    val jsonDataStream  = twitterDataStream
+    val jsonDataStream  = twitterDataStream.keyBy(_.place)
       .map(enrObj => DataTypeFactory.getJsonString(enrObj, Instructions.GET_JSON_TWITTER).toString)
     jsonDataStream.print()
     writeDataStreamToSinks(jsonDataStream)
