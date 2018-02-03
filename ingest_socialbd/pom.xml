@@ -8,7 +8,7 @@
     <artifactId>ingest_socialbd</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
-        <scala.version>2.12</scala.version> <!-- We need this version for to do request to web pages provided that multiple version warning-->
+        <scala.version>2.11</scala.version> <!-- We need this version for to do request to web pages provided that multiple version warning-->
     </properties>
 
     <name>Ingest SocialBD</name>

@@ -334,7 +334,6 @@ under the License.
 									<exclude>commons-fileupload:commons-fileupload</exclude>
 									<exclude>org.apache.avro:avro</exclude>
 									<exclude>commons-collections:commons-collections</exclude>
-									<exclude>com.thoughtworks.paranamer:paranamer</exclude>
 									<exclude>org.xerial.snappy:snappy-java</exclude>
 									<exclude>org.apache.commons:commons-compress</exclude>
 									<exclude>org.tukaani:xz</exclude>

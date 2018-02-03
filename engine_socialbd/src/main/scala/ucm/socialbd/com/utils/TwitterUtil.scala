@@ -1,19 +1,20 @@
 package ucm.socialbd.com.utils
 
-import net.liftweb.json
 import twitter4j.{Status, TwitterObjectFactory}
 import ucm.socialbd.com.dataypes.RawModel.{Twitter, TwitterUser}
 import net.liftweb.json._
+import net.liftweb.json.Extraction._
 /**
   * Created by Jeff on 21/05/2017.
   */
 object TwitterUtil {
 
+  private implicit val formats = net.liftweb.json.DefaultFormats
   // TODO: this method must be edited, now it works basically
   def getTwitterRawObj(rawJSON:String): Twitter ={
 
     //BUG : createStatus doesn't be able to convert all strings in Status Object, therefore need us use json.liftweb utils
-    val status = TwitterObjectFactory.createStatus(rawJSON) // <- this don't work correctly
+    val status = TwitterObjectFactory.createStatus(rawJSON) // <- this doesn't work correctly
     val jsonMap = parse(rawJSON)
 
     val rawTwitterObj =Twitter("Unknown","Unknown","Unknown",

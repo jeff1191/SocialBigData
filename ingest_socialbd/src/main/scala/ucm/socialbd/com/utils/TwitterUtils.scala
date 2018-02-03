@@ -47,7 +47,7 @@ object TwitterUtils {
                    kafkaTopic: String,
                    status: Status): Unit = {
     val msg = copyToJsonString(status)
-    println(msg)
+//    println(msg)
     val tweetMessage = new ProducerRecord[String, String](kafkaTopic,msg)
 
     kafkaProducer.send(tweetMessage)
@@ -63,8 +63,6 @@ object TwitterUtils {
       override def onScrubGeo(userId: Long, upToStatusId: Long): Unit = {}
       //when a tweet comes in get the text and publish to kafka
       override def onStatus(status: Status): Unit = {
-
-
         publishTweet(
           kafkaProducer,
           kafkaTopic,

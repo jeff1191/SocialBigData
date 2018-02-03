@@ -12,6 +12,7 @@ import ucm.socialbd.com.utils.SocialBDConfig
 
 import scalaj.http._
 
+import scala.collection.JavaConverters._
 /**
   * Created by Jeff on 14/05/2017.
   */
@@ -40,7 +41,7 @@ class KafkaProducerBiciMAD(socialBDProperties: IngestSBDProperties) extends Kafk
           producer.send(record)
           Thread.sleep(10)
         }
-        Thread.sleep(10000)
+        Thread.sleep(socialBDProperties.biciMadConf.delayMinutes)
     }
   }catch{
       case e: NoSuchElementException =>{
