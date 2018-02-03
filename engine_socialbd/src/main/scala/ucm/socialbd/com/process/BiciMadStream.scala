@@ -21,9 +21,9 @@ class BiciMadStream(socialBDProperties: SocialBDProperties) extends StreamTransf
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     val biciDataStream: DataStream[BiciMAD] = KafkaFactoryConsumer.getRawStream(env,socialBDProperties,Instructions.GET_RAW_BICIMAD).asInstanceOf[DataStream[BiciMAD]]
 
-    val jsonDataStream  = biciDataStream
+    val jsonDataStream  = biciDataStream.keyBy(_.address)
       .map(enrObj => DataTypeFactory.getJsonString(enrObj, Instructions.GET_JSON_BICIMAD).toString)
-
+//    jsonDataStream.print()
     writeDataStreamToSinks(jsonDataStream)
     env.execute("BiciMad Job SocialBigData-CM")
   }

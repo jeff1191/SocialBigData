@@ -26,12 +26,14 @@ class KafkaProducerEMTBuses(socialBDProperties: IngestSBDProperties) extends Kaf
     val producer = new KafkaProducer[String, String](props)
     try{
       while(true) {
+
+        Thread.sleep(socialBDProperties.eMTBusesConf.delayMinutes)
+
         if(nParada != stopList.size - 1) //skip header
           nParada = nParada + 1
-        else{
+        else
           nParada = 1
-        }
-        Thread.sleep(6000 )
+
         val urlRequest = socialBDProperties.eMTBusesConf.urlEMTBuses.replace("#inputIdStop#",stopList(nParada))
         val response: HttpResponse[String] = Http(urlRequest).asString
         val eventTime = response.headers.getOrElse("Date","Problem encountered").asInstanceOf[Vector[String]](0)
@@ -61,6 +63,7 @@ class KafkaProducerEMTBuses(socialBDProperties: IngestSBDProperties) extends Kaf
           println(jsonString)
           val record = new ProducerRecord(socialBDProperties.eMTBusesConf.emtbusesTopic, "key", jsonString)
           producer.send(record)
+
       }
     }
     catch{
@@ -82,7 +85,6 @@ class KafkaProducerEMTBuses(socialBDProperties: IngestSBDProperties) extends Kaf
         process()//reconnect
       }
     }
-//    producer.close()
 
   }
   def fromXMLJSONArray(xml: String): JSONArray ={

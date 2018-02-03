@@ -47,7 +47,7 @@
         <!-- https://mvnrepository.com/artifact/net.liftweb/lift-webkit_2.12 -->
         <dependency>
             <groupId>net.liftweb</groupId>
-            <artifactId>lift-webkit_2.12</artifactId>
+            <artifactId>lift-webkit_2.11</artifactId>
             <version>3.0.1</version>
         </dependency>
 

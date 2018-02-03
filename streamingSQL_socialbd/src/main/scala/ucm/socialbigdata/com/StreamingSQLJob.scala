@@ -63,8 +63,8 @@ object StreamingSQLJob {
     // comma separated list of Kafka brokers
     properties.setProperty("bootstrap.servers", socialBDProperties.kafkaBrokersUrls)
 
-    val dataStream : DataStream[ETweet] = KafkaFactoryConsumer.getEnrichmentStream(socialBDProperties.topic,socialBDProperties.kafkaBrokersUrls,
-      true, socialBDProperties.fromBeginning).asInstanceOf[ DataStream[ETweet] ]
+  KafkaFactoryConsumer.getEnrichmentStream(socialBDProperties.topic,socialBDProperties.kafkaBrokersUrls,
+      true, socialBDProperties.fromBeginning)
 
     //tableEnv.registerDataStream("etweets", dataStream, 'id_str , 'createdAt, 'Xcoord, 'Ycoord, 'place, 'text, 'user, 'retweeted)
 
@@ -79,20 +79,32 @@ object StreamingSQLJob {
     pattern.findAllIn(query).matchData foreach {
       m => fields = m.group(1)
     }
+    val resultTable = tableEnv.sqlQuery(query)
 
-    val resultTable = tableEnv.sqlQuery(query).toRetractStream[Row]
-
-    val jsonDataStream : DataStream[String] = resultTable.map(_._2).map(new RowToJSONMap(fields.split(",").toList))
-
-    jsonDataStream.print()
+    val jsonDataStream : DataStream[String] =
+      if(!fields.contains("*"))
+        resultTable
+          .toRetractStream[Row].map(_._2)
+          .map(new RowToJSONMap(fields.split(",").toList))
+    else
+      resultTable
+        .toRetractStream[ETweet].map(_._2)
+        .map( x =>{
+        import net.liftweb.json._
+        implicit val formats = net.liftweb.json.DefaultFormats
+        compactRender((Extraction decompose  x))
+      }
+      )
+//
+//    jsonDataStream.print()
     val config = getElasticConfiguration(socialBDProperties)
 
     val transports = new java.util.ArrayList[InetSocketAddress]
     transports.add(new InetSocketAddress(InetAddress.getByName(socialBDProperties.elasticUrl), socialBDProperties.elasticPort))
 
-
-    jsonDataStream.addSink(new ElasticsearchSink(config, transports,
-      new SimpleElasticsearchSink(socialBDProperties.elasticIndex,socialBDProperties.elasticType) ))
+    jsonDataStream.print()
+//    jsonDataStream.addSink(new ElasticsearchSink(config, transports,
+//      new SimpleElasticsearchSink(socialBDProperties.elasticIndex,socialBDProperties.elasticType) ))
     // execute program
     env.execute("Flink SQL SocialBigData-CM")
   }

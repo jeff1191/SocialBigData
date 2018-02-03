@@ -47,7 +47,7 @@ object TwitterUtils {
                    kafkaTopic: String,
                    status: Status): Unit = {
     val msg = copyToJsonString(status)
-//    println(msg)
+    println(msg)
     val tweetMessage = new ProducerRecord[String, String](kafkaTopic,msg)
 
     kafkaProducer.send(tweetMessage)

@@ -23,8 +23,12 @@ object TwitterUtil {
         "Unknown","Unknown"),
       "Unknown")
 
+    val auxPlace = jsonMap \ "place" \ "fullName"
+
     rawTwitterObj.id_str = status.getId.toString
-    rawTwitterObj.place = compactRender(jsonMap \ "place" \ "fullName").toString
+
+    rawTwitterObj.place = if(!auxPlace.getClass.getName.equalsIgnoreCase(JsonAST.JNothing.getClass.getName)) compactRender(auxPlace).toString
+                          else "Unknown"
 
     rawTwitterObj.createdAt = compactRender(jsonMap \ "createdAt").toString
     if(status.getGeoLocation != null)

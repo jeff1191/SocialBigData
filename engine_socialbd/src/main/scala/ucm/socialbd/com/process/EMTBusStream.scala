@@ -20,7 +20,7 @@ class EMTBusStream(socialBDProperties: SocialBDProperties) extends StreamTransfo
   override def process(): Unit = {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     val emtBusStream: DataStream[EMTBus] = KafkaFactoryConsumer.getRawStream(env,socialBDProperties,Instructions.GET_RAW_EMTBUS).asInstanceOf[DataStream[EMTBus]]
-    val jsonDataStream  = emtBusStream
+    val jsonDataStream  = emtBusStream.keyBy(_.idStop)
       .map(enrObj => DataTypeFactory.getJsonString(enrObj, Instructions.GET_JSON_EMTBUS).toString)
 
     writeDataStreamToSinks(jsonDataStream)
