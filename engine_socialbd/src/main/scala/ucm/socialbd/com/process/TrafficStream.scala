@@ -60,19 +60,20 @@ class TrafficStream(socialBDProperties: SocialBDProperties) extends StreamTransf
       //494 it means interurban
       ETraffic(enrFile.gid,rawObj.codigo,enrFile.nombre,rawObj.timestamp,"494", rawObj.intensidad, rawObj.carga,rawObj.velocidad,rawObj.error,enrFile.Xcoord,enrFile.Ycoord)
   }
-    val jsonString = enrichmentInterUrbanDataStream.union(enrichmentUrbanDataStream)
+    val jsonUnionDataStream = enrichmentInterUrbanDataStream.union(enrichmentUrbanDataStream)
                   .map(enrObj => DataTypeFactory.getJsonString(enrObj, Instructions.GET_JSON_TRAFFIC).toString)
 
-    val jsonRawDataUrbanStream  = urbanTrafficDataStream
-      .map(enrObj => DataTypeFactory.getJsonString(enrObj, Instructions.GET_JSON_URBANTRAFFIC).toString)
-      .writeAsText(socialBDProperties.trafficConf.outputDir+ "/raw/urban/" + new SimpleDateFormat("yyyyMMdd_HHmmSSS").format(new Date()))
-      .setParallelism(1)
-    val jsonRawDataInterUrbanStream  = interUrbanTrafficDataStream
-      .map(enrObj => DataTypeFactory.getJsonString(enrObj, Instructions.GET_JSON_INTERURBANTRAFFIC).toString)
-      .writeAsText(socialBDProperties.trafficConf.outputDir+ "/raw/interUrban/" + new SimpleDateFormat("yyyyMMdd_HHmmSSS").format(new Date()))
-      .setParallelism(1)
+//    val jsonRawDataUrbanStream  = urbanTrafficDataStream
+//      .map(enrObj => DataTypeFactory.getJsonString(enrObj, Instructions.GET_JSON_URBANTRAFFIC).toString)
+//      .writeAsText(socialBDProperties.trafficConf.outputDir+ "/raw/urban/" + new SimpleDateFormat("yyyyMMdd_HHmmSSS").format(new Date()))
+//      .setParallelism(1)
+//    val jsonRawDataInterUrbanStream  = interUrbanTrafficDataStream
+//      .map(enrObj => DataTypeFactory.getJsonString(enrObj, Instructions.GET_JSON_INTERURBANTRAFFIC).toString)
+//      .writeAsText(socialBDProperties.trafficConf.outputDir+ "/raw/interUrban/" + new SimpleDateFormat("yyyyMMdd_HHmmSSS").format(new Date()))
+//      .setParallelism(1)
 
-    writeDataStreamToSinks(jsonString)
+    jsonUnionDataStream.print()
+    writeDataStreamToSinks(jsonUnionDataStream)
   // execute the transformation pipeline
   env.execute("Traffic Job SocialBigData-CM")
   }
