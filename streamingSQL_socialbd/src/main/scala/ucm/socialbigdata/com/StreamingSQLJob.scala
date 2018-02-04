@@ -95,16 +95,14 @@ object StreamingSQLJob {
         compactRender((Extraction decompose  x))
       }
       )
-//
-//    jsonDataStream.print()
+
     val config = getElasticConfiguration(socialBDProperties)
 
     val transports = new java.util.ArrayList[InetSocketAddress]
     transports.add(new InetSocketAddress(InetAddress.getByName(socialBDProperties.elasticUrl), socialBDProperties.elasticPort))
 
-    jsonDataStream.print()
-//    jsonDataStream.addSink(new ElasticsearchSink(config, transports,
-//      new SimpleElasticsearchSink(socialBDProperties.elasticIndex,socialBDProperties.elasticType) ))
+    jsonDataStream.addSink(new ElasticsearchSink(config, transports,
+      new SimpleElasticsearchSink(socialBDProperties.elasticIndex,socialBDProperties.elasticType) ))
     // execute program
     env.execute("Flink SQL SocialBigData-CM")
   }

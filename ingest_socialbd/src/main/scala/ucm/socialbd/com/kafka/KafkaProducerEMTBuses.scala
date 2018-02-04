@@ -27,7 +27,6 @@ class KafkaProducerEMTBuses(socialBDProperties: IngestSBDProperties) extends Kaf
     try{
       while(true) {
 
-        Thread.sleep(socialBDProperties.eMTBusesConf.delayMinutes)
 
         if(nParada != stopList.size - 1) //skip header
           nParada = nParada + 1
@@ -64,6 +63,7 @@ class KafkaProducerEMTBuses(socialBDProperties: IngestSBDProperties) extends Kaf
           val record = new ProducerRecord(socialBDProperties.eMTBusesConf.emtbusesTopic, "key", jsonString)
           producer.send(record)
 
+        Thread.sleep(10000)
       }
     }
     catch{

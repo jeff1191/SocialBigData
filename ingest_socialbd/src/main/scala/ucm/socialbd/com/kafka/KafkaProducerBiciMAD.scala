@@ -36,7 +36,7 @@ class KafkaProducerBiciMAD(socialBDProperties: IngestSBDProperties) extends Kafk
 
         while (itJSON.hasNext) {
           val message = ("" + itJSON.next()).replaceFirst("}",",\"timestamp\":"+ s""""$fechaHora"}""")
-          println(message)
+//          println(message)
           val record = new ProducerRecord(socialBDProperties.biciMadConf.bicimadTopic, "key", message)
           producer.send(record)
           Thread.sleep(10)
